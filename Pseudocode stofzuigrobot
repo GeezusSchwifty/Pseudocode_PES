@@ -1,0 +1,259 @@
+#include "mbed.h"
+
+// Definieren van de verschillende states
+enum State {
+    initialization, 
+    nothing_detected, 
+    no_ground_detected, 
+    no_ground_F_or_B, 
+    front_ultrasone, 
+    leftside_ultrasone, 
+    rightside_ultrasone,
+    error_state_1,
+    error_state_2,
+    error_state_3,
+    error_state_4
+}next_state, current_state, previous_state ;
+
+
+
+
+int main()
+{
+    next_state = initialization;
+    while (power_switch == true){
+        switch(current_state){
+
+
+            // Initializatie van het systeem wordt uitgevoerd
+            case initialization:
+                // Entry: Zet servo positie op de helft van de maximale waarde, zodat hij mooi in het midden staat
+                // Do:  Lees infrarood sensoren uit en stuur de motoren aan totdat er ondergrond is gedetecteert door beide
+                //      Lees afstand tot voorste ultrasoon uit en rij naar achteren tot deze groter dan 5 cm is
+                // Check: Beide IR-sensoren ondergrond gedetecteerd? Afstand tot voorste ultrasoon minimaal 5 cm?
+                // Exit: next_state = nothing_detected
+
+
+            // Geen object binnen 15 cm van de voorkant, binnen 20 cm van de zijkant
+            // Aan zowel de voorkant als de achterkant wordt een ondergrond gedetecteerd
+            case nothing_detected:
+                // Entry: Zet motoren aan naar voren
+                // Do: Draai servo consistent over zijn volle bereik
+                /* Check:
+                Geen grond gedecteerd door IR-sensoren? 
+                next_state = no_ground_detected
+
+                Geen grond gedecteerd door 1 van de 2 IR-sensoren? 
+                next_state = no_ground_F_or_B
+
+                Object binnen 15 cm gedecteerd door de voorste ultrasoon sensor? 
+                next_state = front_ultrasone
+
+                Object binnen 20 cm gedecteerd door de linker ultrasoon sensor? 
+                next_state = leftside_ultrasone
+
+                Object binnen 20 cm gedecteerd door de rechter ultrasoon sensor? 
+                next_state = rightside_ultrasone
+
+                // Exit: previous_state = nothing_detected 
+                */
+
+
+            // Zowel de voorste als de achterste infrarood sensor detecteert geen ondergrond
+            case no_ground_detected: 
+                // Entry: Zet motoren uit
+                // Check: Beide IR-sensoren weer ondergrond gedecteerd?
+                // Exit: next_state = initialization
+
+
+            // Of de voorste of de achterste infrarood sensor detecteert geen ondergrond
+            case no_ground_F_or_B:
+                // Entry: Zet motoren uit
+                Do:
+                if(!infrarood_voor){
+                    // Draai servo consistent
+                    // Stuur motoren schuin naar achteren aan
+                }
+                if(!infrarood_achter){
+                    // Draai servo consistent
+                    // Stuur motoren schuin naar voren aan
+                }
+                // Check: Beide IR-sensoren weer een ondergrond? next_state = nothing_detected
+                // Exit: previous_state = no_ground_detected
+
+            // Alleen de naar voren gerichte ultrasoon detecteert een object binnen 15 cm
+            case front_ultrasone:
+                // Do: 
+                if(front_ultrasonic_distance < 15 && servo positie in rechter helft){
+                    // Draai servo consistent
+                    // Stuur motoren aan naar links
+                }
+                if(front_ultrasonic_distance < 15 && servo positie in linker helft){
+                    // Draai servo consistent
+                    // Stuur motoren aan naar rechts
+                }
+                if(front_ultrasonic_distance < 10){
+                    // Start timer
+                }
+                if(front_ultrasonic_distance >= 10){
+                    // Reset timer naar 0
+                }
+                // Check:
+                /*
+                Timer langer dan 10 seconden?
+                next_state = error_state_1
+
+                Geen object binnen 15 cm van de voorkant, binnen 20 van de zijkanten en ondergrond?
+                next_state = nothing_detected
+
+                Geen grond gedecteerd door IR-sensoren? 
+                next_state = no_ground_detected
+
+                Geen grond gedecteerd door 1 van de 2 IR-sensoren? 
+                next_state = no_ground_F_or_B
+
+                Object binnen 20 cm gedecteerd door de linker ultrasoon sensor? 
+                next_state = leftside_ultrasone
+
+                Object binnen 20 cm gedecteerd door de rechter ultrasoon sensor? 
+                next_state = rightside_ultrasone
+                */
+                // Exit: previous_state = front_ultrasone  
+
+
+            // De naar links gerichte ultrasoon detecteert een object binnen 20 cm
+            case leftside_ultrasone:
+                // Do:
+                if(linker_ultrasoon_distance < 20 && front_ultrasonic_distance > 15){
+                    // Draai servo consistent
+                    // Houd de muur op 5±0.1 cm van de linker ultrasoon
+                }
+                if(linker_ultrasoon_distance && front_ultrasonic_distance < 15 && servo.read(Rechterhelft)){
+                    // Draai servo consistent
+                    // Stuur tot maximaal 1cm naar de muur zonder hem te raken
+                }
+                if(front_ultrasonic_distance < 10){
+                    // Start timer
+                }
+                if(front_ultrasonic_distance >= 10){
+                    // Reset timer naar 0
+                }
+                // Check:
+                /*
+                Timer langer dan 10 seconden?
+                next_state = error_state_1
+
+                Geen object binnen 15 cm van de voorkant, binnen 20 van de zijkanten en ondergrond?
+                next_state = nothing_detected
+
+                Geen grond gedecteerd door IR-sensoren? 
+                next_state = no_ground_detected
+
+                Geen grond gedecteerd door 1 van de 2 IR-sensoren? 
+                next_state = no_ground_F_or_B
+
+                Object binnen 15 cm gedecteerd door de voorste ultrasoon sensor? 
+                next_state = front_ultrasone
+
+                Object binnen 20 cm gedecteerd door de rechter ultrasoon sensor? 
+                next_state = rightside_ultrasone
+                */
+                // Exit: previous_state = leftside_ultrasone 
+
+
+            // De naar rechts gerichte ultrasoon detecteert een object binnen 20 cm
+            case rightside_ultrasone:
+                // Do:
+                if(rechter_ultrasoon_distance < 20 && front_ultrasonic_distance > 15){
+                    // Draai servo consistent
+                    // Houd de muur op 5±0.1 cm van de rechter ultrasoon
+                }
+                if(rechter_ultrasoon_distance && front_ultrasonic_distance < 15 && servo.read(linkerhelft)){
+                    // Draai servo consistent
+                    // Stuur tot maximaal 1cm naar de muur zonder hem te raken
+                }
+                if(front_ultrasonic_distance < 10){
+                    // Start timer
+                }
+                if(front_ultrasonic_distance >= 10){
+                    // Reset timer naar 0
+                }
+                // Check:
+                /*
+                Timer langer dan 10 seconden?
+                next_state = error_state_1
+
+                Geen object binnen 15 cm van de voorkant, binnen 20 van de zijkanten en ondergrond?
+                next_state = nothing_detected
+
+                Geen grond gedecteerd door IR-sensoren? 
+                next_state = no_ground_detected
+
+                Geen grond gedecteerd door 1 van de 2 IR-sensoren? 
+                next_state = no_ground_F_or_B
+
+                Object binnen 15 cm gedecteerd door de voorste ultrasoon sensor? 
+                next_state = front_ultrasone
+
+                Object binnen 20 cm gedecteerd door de linker ultrasoon sensor? 
+                next_state = leftside_ultrasone
+                */
+                // Exit: previous_state = rightside_ultrasone 
+
+
+            // Systeem ziet al langer dan 10 seconden een object binnen 5 cm van de voorste ultrasoon
+            case error_state_1:
+                // Entry: Systeem zet motoren uit
+                // Do: Start een timer, stuur motoren naar achteren aan
+                // Check:
+                /*
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon groter dan 15 cm?
+                next_state = previous_state
+
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon kleiner dan 15 cm?
+                next_state = error_state_2
+                */
+                // Exit: Zet motoren uit
+
+
+            // Error_state_1 doorlopen en object weer 10 seconden binnen 15 cm
+            case error_state_2:
+                // Entry: Systeem zet eerste de motoren uit en draait vervolgens 90° rechtsom over zijn eigen as 
+                // Do: Start een timer, stuur motoren naar achteren aan
+                // Check:
+                /*
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon groter dan 15 cm?
+                next_state = previous_state
+
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon kleiner dan 15 cm?
+                next_state = error_state_3
+                */
+                // Exit: Zet motoren uit
+
+
+            // Error_state_2 doorlopen en object weer 10 seconden binnen 15 cm 
+            case error_state_3:
+                // Entry: Systeem zet eerste de motoren uit en draait vervolgens 90° rechtsom over zijn eigen as 
+                // Do: Start een timer, stuur motoren naar achteren aan
+                // Check:
+                /*
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon groter dan 15 cm?
+                next_state = previous_state
+
+                Timer groter dan 5 seconden en afstand tot voorste ultrasoon kleiner dan 15 cm?
+                next_state = error_state_4
+                */
+                // Exit: Zet motoren uit
+
+            
+            // Error_state_3 doorlopen en object nog steeds binnen 15 cm
+            // Systeem moet alarm geven aan de gebruiker door middel van licht en geluid
+            case error_state_4:
+                // Entry: Systeem zet motoren uit. Start vervolgens een alarm melding door middel van LED's en de zoemer op de robot
+                // Do: Blijf alarm geven aan de gebruiker
+                // Check: Switch aangeraakt door gebruiker?
+                // Exit: next_state = initialization
+        } 
+    }
+}
+
