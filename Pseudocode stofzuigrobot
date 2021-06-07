@@ -32,7 +32,7 @@ int main()
                 //      Lees afstand tot voorste ultrasoon uit en rij naar achteren tot deze groter dan 5 cm is
                 // Check: Beide IR-sensoren ondergrond gedetecteerd? Afstand tot voorste ultrasoon minimaal 5 cm?
                 // Exit: next_state = nothing_detected
-
+                break;
 
             // Geen object binnen 15 cm van de voorkant, binnen 20 cm van de zijkant
             // Aan zowel de voorkant als de achterkant wordt een ondergrond gedetecteerd
@@ -42,7 +42,7 @@ int main()
                 /* Check:
                 Geen grond gedecteerd door IR-sensoren? 
                 next_state = no_ground_detected
-
+                
                 Geen grond gedecteerd door 1 van de 2 IR-sensoren? 
                 next_state = no_ground_F_or_B
 
@@ -54,9 +54,9 @@ int main()
 
                 Object binnen 20 cm gedecteerd door de rechter ultrasoon sensor? 
                 next_state = rightside_ultrasone
-
-                // Exit: previous_state = nothing_detected 
                 */
+                // Exit: previous_state = nothing_detected 
+                break;
 
 
             // Zowel de voorste als de achterste infrarood sensor detecteert geen ondergrond
@@ -64,7 +64,7 @@ int main()
                 // Entry: Zet motoren uit
                 // Check: Beide IR-sensoren weer ondergrond gedecteerd?
                 // Exit: next_state = initialization
-
+                break;
 
             // Of de voorste of de achterste infrarood sensor detecteert geen ondergrond
             case no_ground_F_or_B:
@@ -80,7 +80,9 @@ int main()
                 }
                 // Check: Beide IR-sensoren weer een ondergrond? next_state = nothing_detected
                 // Exit: previous_state = no_ground_detected
-
+                break;
+                
+                
             // Alleen de naar voren gerichte ultrasoon detecteert een object binnen 15 cm
             case front_ultrasone:
                 // Do: 
@@ -119,6 +121,7 @@ int main()
                 next_state = rightside_ultrasone
                 */
                 // Exit: previous_state = front_ultrasone  
+                break;
 
 
             // De naar links gerichte ultrasoon detecteert een object binnen 20 cm
@@ -159,6 +162,7 @@ int main()
                 next_state = rightside_ultrasone
                 */
                 // Exit: previous_state = leftside_ultrasone 
+                break;
 
 
             // De naar rechts gerichte ultrasoon detecteert een object binnen 20 cm
@@ -199,6 +203,7 @@ int main()
                 next_state = leftside_ultrasone
                 */
                 // Exit: previous_state = rightside_ultrasone 
+                break;
 
 
             // Systeem ziet al langer dan 10 seconden een object binnen 5 cm van de voorste ultrasoon
@@ -214,6 +219,7 @@ int main()
                 next_state = error_state_2
                 */
                 // Exit: Zet motoren uit
+                break;
 
 
             // Error_state_1 doorlopen en object weer 10 seconden binnen 15 cm
@@ -229,6 +235,7 @@ int main()
                 next_state = error_state_3
                 */
                 // Exit: Zet motoren uit
+                break;
 
 
             // Error_state_2 doorlopen en object weer 10 seconden binnen 15 cm 
@@ -244,6 +251,7 @@ int main()
                 next_state = error_state_4
                 */
                 // Exit: Zet motoren uit
+                break;
 
             
             // Error_state_3 doorlopen en object nog steeds binnen 15 cm
@@ -253,6 +261,7 @@ int main()
                 // Do: Blijf alarm geven aan de gebruiker
                 // Check: Switch aangeraakt door gebruiker?
                 // Exit: next_state = initialization
+                break;
         } 
     }
 }
