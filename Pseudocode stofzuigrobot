@@ -20,8 +20,11 @@ enum State {
 
 int main()
 {
-    current_state = initialization;
+    next_state = initialization
+    
     while (power_switch == true){
+    
+        current_state = next_state;
         switch(current_state){
 
 
