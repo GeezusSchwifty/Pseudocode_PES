@@ -262,6 +262,10 @@ int main()
                 // Check: Switch aangeraakt door gebruiker?
                 // Exit: next_state = initialization
                 break;
+                
+            case default: 
+            // Invalid state: Error message
+            break;
         } 
     }
 }
